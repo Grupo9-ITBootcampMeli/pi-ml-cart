@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Builder
 @Getter
@@ -18,10 +18,11 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
     private Long id;
-    private Long buyerId;
+    private String buyerId;
     private String orderStatus;
     private LocalDateTime orderDate;
 
     @OneToMany(mappedBy = "cart")
-    private Set<CartProduct> products;
+    private List<CartProduct> products;
+
 }
