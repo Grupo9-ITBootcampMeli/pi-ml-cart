@@ -22,7 +22,7 @@ public class CartController {
     @PostMapping("/api/v1/fresh-products/orders/")
     public ResponseEntity<CartDto> createCart(@RequestBody CartDto dto) {
         Cart cart = dto.map();
-        CartDto createdCart = CartDto.map(cartService.create(cart));
-        return new ResponseEntity<>(createdCart, HttpStatus.CREATED);
-    }
+//        CartDto createdCart = CartDto.mapResponse(cartService.create(cart));
+//        return new ResponseEntity<>(createdCart, HttpStatus.CREATED);
+//    }
 }

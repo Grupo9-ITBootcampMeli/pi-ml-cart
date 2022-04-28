@@ -18,21 +18,22 @@ public class CartDto {
     private CartInfoDto purchaseOrder;
     private List<CartProductDto> products;
 
-    public static void map(Cart cart) {
-        return CartDto.builder()
-
-    }
+//    public static void mapResponse(Cart cart) {
+//        return CartDto.builder()
+//
+//    }
 
     public Cart map() {
         Cart cart = Cart.builder().buyerId(this.purchaseOrder.getBuyerId())
                 .orderStatus(this.purchaseOrder.getOrderStatus())
                 .orderDate(this.purchaseOrder.getDate()).build();
-//        this.products.stream().map(e -> )
-//        productList.stream().map(ProductDTO::map).collect(Collectors.toList());
 
-        cart.setProducts(this.products.stream().map(CartProductDto::map).map(e -> e.setCart_id(cart.getId())).collect(Collectors.toList()));
+        cart.setProducts(this.products.stream().map(CartProductDto::map).collect(Collectors.toList()));
         return cart;
     }
+
+//    pegar aqui direto no preço
+
 
 
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

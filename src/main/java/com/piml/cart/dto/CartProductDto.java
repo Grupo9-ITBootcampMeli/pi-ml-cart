@@ -3,6 +3,8 @@ package com.piml.cart.dto;
 import com.piml.cart.entity.CartProduct;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Builder
 @Getter
 @Setter
@@ -11,6 +13,7 @@ import lombok.*;
 public class CartProductDto {
     private String productId;
     private Integer quantity;
+    private BigDecimal unitPrice;
 
     public static CartProduct map(CartProductDto dto) {
         return CartProduct.builder()
@@ -18,3 +21,6 @@ public class CartProductDto {
                 .quantity(dto.getQuantity()).build();
     }
 }
+
+
+// chamada ao PriceApiService

@@ -1,6 +1,5 @@
 package com.piml.cart.dto;
 
-import com.piml.cart.util.OrderStatusENUM;
 import lombok.*;
 
 import java.time.LocalDateTime;
