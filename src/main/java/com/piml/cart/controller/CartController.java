@@ -2,6 +2,7 @@ package com.piml.cart.controller;
 
 
 import com.piml.cart.dto.CartDto;
+import com.piml.cart.dto.ResponseDto;
 import com.piml.cart.entity.Cart;
 import com.piml.cart.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,9 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping("/api/v1/fresh-products/orders/")
-    public ResponseEntity<CartDto> createCart(@RequestBody CartDto dto) {
+    public ResponseEntity<ResponseDto> createCart(@RequestBody CartDto dto) {
         Cart cart = dto.map();
-//        CartDto createdCart = CartDto.mapResponse(cartService.create(cart));
-//        return new ResponseEntity<>(createdCart, HttpStatus.CREATED);
-//    }
+        ResponseDto response = new ResponseDto(cartService.create(cart));
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 }
