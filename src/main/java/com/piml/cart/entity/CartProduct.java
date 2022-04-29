@@ -20,8 +20,12 @@ public class CartProduct {
     @JoinColumn(name = "cart_id", nullable = false)
     @JsonIgnore
     private Cart cart;
-    private String product_id;
+    private Long productId;
     private Integer quantity;
     private BigDecimal unitPrice;
-//    apiProduct
+
+    public CartProduct(Long productId, Integer quantity) {
+        this.productId = productId;
+        this.quantity = quantity;
+    }
 }

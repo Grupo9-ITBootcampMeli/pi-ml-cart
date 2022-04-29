@@ -42,7 +42,7 @@ public class CartService {
     }
 
     public void setPrices(List<CartProduct> cartProducts) {
-        List<String> ids = cartProducts.stream().map(p -> p.getProduct_id()).collect(Collectors.toList());
+        List<Long> ids = cartProducts.stream().map(p -> p.getProductId()).collect(Collectors.toList());
         List<PriceDto> prices = this.priceApiService.fetchPricesById(ids);
         cartProducts.forEach(cartProduct -> cartProduct.setUnitPrice(prices.get(cartProducts.indexOf(cartProduct)).getPrice()));
     }

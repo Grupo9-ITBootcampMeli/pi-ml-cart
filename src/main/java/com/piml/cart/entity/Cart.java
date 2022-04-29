@@ -18,7 +18,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
     private Long id;
-    private String buyerId;
+    private Long buyerId;
     private String orderStatus;
     private LocalDateTime orderDate;
 

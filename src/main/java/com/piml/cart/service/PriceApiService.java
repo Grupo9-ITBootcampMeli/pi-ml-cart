@@ -22,9 +22,9 @@ public class PriceApiService {
         this.restTemplate = builder.build();
     }
 
-    public List<PriceDto> fetchPricesById(List<String> ids) {
-        String idsString = ids.stream().collect(Collectors.joining(","));
-        String resourceURI = PRODUCT_API_URI.concat(PRODUCTS_RESOURCE).concat("/").concat(idsString);
+    public List<PriceDto> fetchPricesById(List<Long> ids) {
+        String idsString = ids.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String resourceURI = PRODUCT_API_URI.concat(PRODUCTS_RESOURCE).concat("/?products=").concat(idsString);
         try{
             ResponseEntity<PriceDto[]> result = restTemplate.getForEntity(resourceURI, PriceDto[].class);
             return Arrays.stream(result.getBody()).collect(Collectors.toList());

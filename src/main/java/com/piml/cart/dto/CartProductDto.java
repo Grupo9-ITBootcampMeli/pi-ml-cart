@@ -11,16 +11,19 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartProductDto {
-    private String productId;
+    private Long productId;
     private Integer quantity;
     private BigDecimal unitPrice;
 
     public static CartProduct map(CartProductDto dto) {
         return CartProduct.builder()
-                .product_id(dto.getProductId())
+                .productId(dto.getProductId())
                 .quantity(dto.getQuantity()).build();
     }
+
+    public CartProductDto (Long productId, Integer quantity) {
+        this.productId = productId;
+        this.quantity = quantity;
+    }
+
 }
-
-
-// chamada ao PriceApiService
