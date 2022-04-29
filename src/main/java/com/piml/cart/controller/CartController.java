@@ -37,4 +37,11 @@ public class CartController {
                 .stream()
                 .map(CartProductDto::map).collect(Collectors.toList()), HttpStatus.OK);
     }
+
+    @PutMapping("/api/v1/fresh-products/orders/")
+    public ResponseEntity<HttpStatus> updateCartStatus(@RequestParam(name = "id") Long id) {
+        Cart cartToUpdate = cartService.getCartById(id);
+        cartService.updateCartStatus(cartToUpdate);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }
