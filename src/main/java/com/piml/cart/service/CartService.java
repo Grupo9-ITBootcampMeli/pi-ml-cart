@@ -37,6 +37,15 @@ public class CartService {
         return cartRepository.getById(id).getProducts();
     }
 
+    public void updateCartStatus(Cart cart) {
+        if (cart.getOrderStatus().equals("Aberto")) {
+            cart.setOrderStatus("Fechado");
+        } else {
+            cart.setOrderStatus("Aberto");
+        }
+        cartRepository.save(cart);
+    }
+
     public List<CartProduct> setCart(Cart cart) {
         List<CartProduct> cartProducts = new ArrayList<>();
         for (CartProduct cp: cart.getProducts()) {
@@ -44,6 +53,12 @@ public class CartService {
             cartProducts.add(cp);
         }
         return  cartProducts;
+    }
+
+    public Cart getCartById(Long id) {
+        return cartRepository.findById(id).orElseThrow(() -> {
+           throw new RuntimeException("Cart not found");
+        });
     }
 
     public void setPrices(List<CartProduct> cartProducts) {
