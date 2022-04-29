@@ -26,4 +26,11 @@ public class CartProductDto {
         this.quantity = quantity;
     }
 
+    public static CartProductDto map(CartProduct cp) {
+        return CartProductDto.builder()
+                .productId(cp.getProductId())
+                .quantity(cp.getQuantity())
+                .unitPrice(cp.getUnitPrice()).build();
+    }
+
 }
