@@ -1,5 +1,6 @@
 package com.piml.cart.service;
 
+
 import com.piml.cart.dto.PriceDto;
 import com.piml.cart.entity.Cart;
 import com.piml.cart.entity.CartProduct;
@@ -30,6 +31,10 @@ public class CartService {
         setPrices(cartProducts);
         cartProducts.stream().map(cartProductRepository::save).collect(Collectors.toList());
         return cart;
+    }
+
+    public List<CartProduct> getCartProducts(Long id) {
+        return cartRepository.getById(id).getProducts();
     }
 
     public List<CartProduct> setCart(Cart cart) {
