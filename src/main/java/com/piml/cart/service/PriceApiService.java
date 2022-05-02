@@ -2,6 +2,7 @@ package com.piml.cart.service;
 
 
 import com.piml.cart.dto.PriceDto;
+import com.piml.cart.util.Utils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class PriceApiService {
     private static final String PRODUCT_API_URI = "https://63d5a2e8-0150-492a-bf0d-16828f348d77.mock.pstmn.io";
-    private static final String PRODUCTS_RESOURCE = "/api/v1/fresh-products";
+    private static final String PRODUCTS_RESOURCE = "/api/v1/fresh-products/?products=";
     private final RestTemplate restTemplate;
 
 
@@ -23,8 +24,7 @@ public class PriceApiService {
     }
 
     public List<PriceDto> fetchPricesById(List<Long> ids) {
-        String idsString = ids.stream().map(String::valueOf).collect(Collectors.joining(","));
-        String resourceURI = PRODUCT_API_URI.concat(PRODUCTS_RESOURCE).concat("/?products=").concat(idsString);
+        String resourceURI = Utils.makeURIWithIds(PRODUCT_API_URI, PRODUCTS_RESOURCE, ids);
         try{
             ResponseEntity<PriceDto[]> result = restTemplate.getForEntity(resourceURI, PriceDto[].class);
             return Arrays.stream(result.getBody()).collect(Collectors.toList());

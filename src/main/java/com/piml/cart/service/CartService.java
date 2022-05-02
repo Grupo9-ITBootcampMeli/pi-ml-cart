@@ -2,6 +2,7 @@ package com.piml.cart.service;
 
 
 import com.piml.cart.dto.PriceDto;
+import com.piml.cart.dto.WarehouseStockDto;
 import com.piml.cart.entity.Cart;
 import com.piml.cart.entity.CartProduct;
 import com.piml.cart.repository.CartProductRepository;
@@ -10,7 +11,10 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,12 +22,14 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartProductRepository cartProductRepository;
     private final PriceApiService priceApiService;
+    private final WarehouseApiService warehouseApiService;
 
-    public CartService(CartRepository cartRepository, CartProductRepository cartProductRepository, PriceApiService priceApiService) {
+    public CartService(CartRepository cartRepository, CartProductRepository cartProductRepository, PriceApiService priceApiService, WarehouseApiService warehouseApiService) {
         super();
         this.cartRepository = cartRepository;
         this.cartProductRepository = cartProductRepository;
         this.priceApiService = priceApiService;
+        this.warehouseApiService = warehouseApiService;
     }
 
     public Cart create(Cart cart) {
@@ -63,9 +69,21 @@ public class CartService {
     }
 
     public void setPrices(List<CartProduct> cartProducts) {
-        List<Long> ids = cartProducts.stream().map(p -> p.getProductId()).collect(Collectors.toList());
+        List<Long> ids = CartService.getProductIds(cartProducts);
         List<PriceDto> prices = this.priceApiService.fetchPricesById(ids);
         cartProducts.forEach(cartProduct -> cartProduct.setUnitPrice(prices.get(cartProducts.indexOf(cartProduct)).getPrice()));
+    }
+
+    public Map<Long, Integer> getProductQttyStock (List<CartProduct> cartProducts) {
+        List<Long> ids = CartService.getProductIds(cartProducts);
+        List<WarehouseStockDto> warehouses = this.warehouseApiService.fetchWarehousesById(ids);
+        return warehouses.stream()
+                .map(w -> w.mapQttyByProductId())
+                .collect(Collectors.toMap(k -> k.getKey(), k -> k.getValue(), Integer::sum));
+    }
+
+    private static List<Long> getProductIds (List<CartProduct> cartProducts) {
+        return cartProducts.stream().map(CartProduct::getProductId).collect(Collectors.toList());
     }
 
 }
