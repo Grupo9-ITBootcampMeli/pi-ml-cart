@@ -8,6 +8,7 @@ import com.piml.cart.repository.CartProductRepository;
 import com.piml.cart.repository.CartRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,13 +38,13 @@ public class CartService {
         return cartRepository.getById(id).getProducts();
     }
 
-    public void updateCartStatus(Cart cart) {
+    public Cart updateCartStatus(Cart cart) {
         if (cart.getOrderStatus().equals("Aberto")) {
             cart.setOrderStatus("Fechado");
         } else {
             cart.setOrderStatus("Aberto");
         }
-        cartRepository.save(cart);
+        return cartRepository.save(cart);
     }
 
     public List<CartProduct> setCart(Cart cart) {
@@ -57,7 +58,7 @@ public class CartService {
 
     public Cart getCartById(Long id) {
         return cartRepository.findById(id).orElseThrow(() -> {
-           throw new RuntimeException("Cart not found");
+           throw new EntityNotFoundException("Cart not found");
         });
     }
 

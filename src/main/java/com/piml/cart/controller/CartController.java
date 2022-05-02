@@ -39,9 +39,10 @@ public class CartController {
     }
 
     @PutMapping("/api/v1/fresh-products/orders/")
-    public ResponseEntity<HttpStatus> updateCartStatus(@RequestParam(name = "id") Long id) {
+    public ResponseEntity<String> updateCartStatus(@RequestParam(name = "id") Long id) {
         Cart cartToUpdate = cartService.getCartById(id);
-        cartService.updateCartStatus(cartToUpdate);
-        return new ResponseEntity(HttpStatus.OK);
+        Cart updatedCart = cartService.updateCartStatus(cartToUpdate);
+        String responseString = "Order status successfully updated to: ";
+        return new ResponseEntity(responseString.concat(updatedCart.getOrderStatus()), HttpStatus.OK);
     }
 }
