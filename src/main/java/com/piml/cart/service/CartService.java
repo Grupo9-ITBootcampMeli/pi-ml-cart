@@ -37,6 +37,8 @@ public class CartService {
         List<CartProduct> cartProducts = setCart(registeredCart);
         setPrices(cartProducts);
         cartProducts.stream().map(cartProductRepository::save).collect(Collectors.toList());
+        Map<Long, Integer> warehouseStock = getProductQttyStock(cartProducts);
+        System.out.println(warehouseStock);
         return cart;
     }
 
@@ -51,6 +53,12 @@ public class CartService {
             cart.setOrderStatus("Aberto");
         }
         return cartRepository.save(cart);
+    }
+
+    private List<CartProduct> validateCartProducts(Cart cart) {
+        List<CartProduct> products = cart.getProducts();
+
+
     }
 
     public List<CartProduct> setCart(Cart cart) {

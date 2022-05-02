@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class WarehouseApiService {
-    private static final String WAREHOUSE_API_URL = "";
+    private static final String WAREHOUSE_API_URL = "https://63d5a2e8-0150-492a-bf0d-16828f348d77.mock.pstmn.io";
     private static final String WAREHOUSE_RESOURCE = "/api/v1/fresh-products/list?products=";
     private final RestTemplate restTemplate;
 
@@ -23,8 +23,11 @@ public class WarehouseApiService {
     public List<WarehouseStockDto> fetchWarehousesById(List<Long> ids) {
         String resourceURI = Utils.makeURIWithIds(WAREHOUSE_API_URL, WAREHOUSE_RESOURCE, ids);
         try{
-            ResponseEntity<WarehouseStockDto[]> result = restTemplate.getForEntity(resourceURI, WarehouseStockDto[].class);
-            return Arrays.stream(result.getBody()).collect(Collectors.toList());
+            ResponseEntity<WarehouseStockDto[]> result = restTemplate
+                    .getForEntity(resourceURI, WarehouseStockDto[].class);
+            WarehouseStockDto[] listWarehouses = result.getBody();
+            return Arrays
+                    .stream(listWarehouses).collect(Collectors.toList());
         }catch (RuntimeException ex){
             throw new RuntimeException("Product not found!");
         }
