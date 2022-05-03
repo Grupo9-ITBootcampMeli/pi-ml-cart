@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class BuyerApiService {
-    private static final String BUYER_API_URI = "https://cba39d3e-8cac-4910-b695-1b4ae386476d.mock.pstmn.io";
+    private static final String BUYER_API_URI = "http://gandalf:8080";
     private static final String API_RESOURCE = "/user/v1";
 
     private final RestTemplate restTemplate;
