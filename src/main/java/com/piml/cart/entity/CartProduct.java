@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -27,5 +28,9 @@ public class CartProduct {
     public CartProduct(Long productId, Integer quantity) {
         this.productId = productId;
         this.quantity = quantity;
+    }
+
+    public Map.Entry<Long, Integer> mapQttyByProductId () {
+        return Map.entry(this.getProductId(), this.getQuantity());
     }
 }
