@@ -30,6 +30,7 @@ public class PriceApiService {
             return Arrays.stream(result.getBody()).collect(Collectors.toList());
         } catch (RuntimeException ex) {
             throw new RuntimeException("Product not Found!");
+            // TODO: 03/05/22 implement exception handling 
         }
     }
 
