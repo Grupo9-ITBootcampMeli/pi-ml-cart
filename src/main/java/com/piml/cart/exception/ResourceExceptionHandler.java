@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.persistence.EntityNotFoundException;
 
 @ControllerAdvice(annotations = RestController.class)
-public class CartExceptionHandler {
+public class ResourceExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<?> handleException() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cart not found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource not found");
     }
 }
