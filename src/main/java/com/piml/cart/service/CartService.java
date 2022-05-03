@@ -20,7 +20,8 @@ public class CartService {
     private final PriceApiService priceApiService;
     private final WarehouseApiService warehouseApiService;
 
-    public CartService(CartRepository cartRepository, CartProductRepository cartProductRepository, PriceApiService priceApiService, WarehouseApiService warehouseApiService) {
+    public CartService(CartRepository cartRepository, CartProductRepository cartProductRepository,
+                       PriceApiService priceApiService, WarehouseApiService warehouseApiService) {
         super();
         this.cartRepository = cartRepository;
         this.cartProductRepository = cartProductRepository;
@@ -107,7 +108,6 @@ public class CartService {
     private static List<Long> getProductIds (List<CartProduct> cartProducts) {
         return cartProducts.stream().map(CartProduct::getProductId).collect(Collectors.toList());
     }
-
 }
 
 
