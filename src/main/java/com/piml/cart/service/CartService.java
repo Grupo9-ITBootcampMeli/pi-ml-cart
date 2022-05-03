@@ -10,11 +10,7 @@ import com.piml.cart.repository.CartRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collector;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +29,10 @@ public class CartService {
     }
 
     public Cart create(Cart cart) {
-        Cart registeredCart = cartRepository.save(cart);
+        validateCartProducts(cart);
+        Cart registeredCart = cartRepository.save(validateCartProducts(cart));
         List<CartProduct> cartProducts = setCart(registeredCart);
-        setPrices(cartProducts);
         cartProducts.stream().map(cartProductRepository::save).collect(Collectors.toList());
-        Map<Long, Integer> warehouseStock = getProductQttyStock(cartProducts);
-        System.out.println(warehouseStock);
         return cart;
     }
 
@@ -50,15 +44,32 @@ public class CartService {
         if (cart.getOrderStatus().equals("Aberto")) {
             cart.setOrderStatus("Fechado");
         } else {
-            cart.setOrderStatus("Aberto");
+            throw new RuntimeException("Order has already been closed");
         }
         return cartRepository.save(cart);
     }
 
-    private List<CartProduct> validateCartProducts(Cart cart) {
-        List<CartProduct> products = cart.getProducts();
+    private Cart validateCartProducts(Cart cart) {
+        List<CartProduct> registeredProducts = validateProducts(cart.getProducts());
+        cart.setProducts(registeredProducts);
+        Map<Long, Integer> qttyInWarehouse = getProductQttyStock(registeredProducts);
+        return validateQttyInStock(qttyInWarehouse, cart);
+    }
 
+    private Cart validateQttyInStock (Map<Long, Integer> qttyInStock, Cart cart) {
+        Map<Long, Integer> cartProducts = cart.getProducts()
+                .stream().map(CartProduct::mapQttyByProductId)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Integer::sum));
+        mapComparer(qttyInStock, cartProducts);
+        return cart;
+    }
 
+    private void mapComparer (Map<Long, Integer> stock, Map<Long, Integer> cart) {
+       stock.forEach((key, value) -> {
+           if(cart.get(key) > value) {
+               throw new RuntimeException("Product out of stock");
+           }
+       });
     }
 
     public List<CartProduct> setCart(Cart cart) {
@@ -76,19 +87,22 @@ public class CartService {
         });
     }
 
-    public void setPrices(List<CartProduct> cartProducts) {
+    public List<CartProduct> validateProducts(List<CartProduct> cartProducts) {
         List<Long> ids = CartService.getProductIds(cartProducts);
         List<PriceDto> prices = this.priceApiService.fetchPricesById(ids);
         cartProducts.forEach(cartProduct -> cartProduct.setUnitPrice(prices.get(cartProducts.indexOf(cartProduct)).getPrice()));
+        return cartProducts;
     }
 
-    public Map<Long, Integer> getProductQttyStock (List<CartProduct> cartProducts) {
+    private Map<Long, Integer> getProductQttyStock (List<CartProduct> cartProducts) {
         List<Long> ids = CartService.getProductIds(cartProducts);
         List<WarehouseStockDto> warehouses = this.warehouseApiService.fetchWarehousesById(ids);
         return warehouses.stream()
-                .map(w -> w.mapQttyByProductId())
-                .collect(Collectors.toMap(k -> k.getKey(), k -> k.getValue(), Integer::sum));
+                .map(WarehouseStockDto::mapQttyByProductId)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Integer::sum));
     }
+
+
 
     private static List<Long> getProductIds (List<CartProduct> cartProducts) {
         return cartProducts.stream().map(CartProduct::getProductId).collect(Collectors.toList());
