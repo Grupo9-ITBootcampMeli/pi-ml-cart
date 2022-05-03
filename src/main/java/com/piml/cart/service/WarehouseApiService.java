@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class WarehouseApiService {
-    private static final String WAREHOUSE_API_URL = "https://63d5a2e8-0150-492a-bf0d-16828f348d77.mock.pstmn.io";
+    private static final String WAREHOUSE_API_URL = "http://warehouse:8083";
     private static final String WAREHOUSE_RESOURCE_1 = "/api/v1/fresh-products/list?products=";
     private static final String WAREHOUSE_RESOURCE_2 = "/api/v1/fresh-products/";
 
