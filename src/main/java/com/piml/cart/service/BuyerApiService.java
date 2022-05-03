@@ -8,8 +8,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class BuyerApiService {
-    private static final String BUYER_API_URI = "";
-    private static final String API_RESOURCE = "";
+    private static final String BUYER_API_URI = "https://cba39d3e-8cac-4910-b695-1b4ae386476d.mock.pstmn.io";
+    private static final String API_RESOURCE = "/user/v1";
 
     private final RestTemplate restTemplate;
 
@@ -21,12 +21,9 @@ public class BuyerApiService {
 
     public BuyerDto create(BuyerDto buyerDto) {
         String resourceURI = BUYER_API_URI.concat(API_RESOURCE);
-        try {
-            ResponseEntity<BuyerDto> result = restTemplate.postForEntity(resourceURI, buyerDto, BuyerDto.class);
-            return result.getBody();
-        } catch (RuntimeException ex) {
-            throw new RuntimeException("Something went wrong...");
-        }
+
+        ResponseEntity<BuyerDto> result = restTemplate.postForEntity(resourceURI, buyerDto, BuyerDto.class);
+        return result.getBody();
     }
 
     public BuyerDto getById(Long id) {
