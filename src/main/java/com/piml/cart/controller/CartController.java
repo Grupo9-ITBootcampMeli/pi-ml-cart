@@ -43,6 +43,8 @@ public class CartController {
         Cart cartToUpdate = cartService.getCartById(id);
         Cart updatedCart = cartService.updateCartStatus(cartToUpdate);
         String responseString = "Order status successfully updated to: ";
+        // TODO: 03/05/22 fix response
+        // TODO: 03/05/22 add exception handler
         return new ResponseEntity(responseString.concat(updatedCart.getOrderStatus()), HttpStatus.OK);
     }
 }
