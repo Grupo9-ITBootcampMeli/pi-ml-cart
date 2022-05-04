@@ -33,7 +33,7 @@ public class CartService {
         validateCartProducts(cart);
         Cart registeredCart = cartRepository.save(validateCartProducts(cart));
         List<CartProduct> cartProducts = setCart(registeredCart);
-        cartProducts.stream().map(cartProductRepository::save).collect(Collectors.toList());
+        cartProducts.forEach(cartProductRepository::save);
         return cart;
     }
 
@@ -58,10 +58,12 @@ public class CartService {
     }
 
     private Cart validateQttyInStock (Map<Long, Integer> qttyInStock, Cart cart) {
-        Map<Long, Integer> cartProducts = cart.getProducts()
-                .stream().map(CartProduct::mapQttyByProductId)
+        List<CartProduct> cartProducts = cart.getProducts();
+        Map<Long, Integer> cartMap = cartProducts.stream()
+                .map(CartProduct::mapQttyByProductId)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Integer::sum));
-        mapComparer(qttyInStock, cartProducts);
+        mapComparer(qttyInStock, cartMap);
+        warehouseApiService.stockAdjust(cartProducts.stream().map(CartProduct::map).collect(Collectors.toList()));
         return cart;
     }
 

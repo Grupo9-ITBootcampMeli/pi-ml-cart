@@ -1,6 +1,7 @@
 package com.piml.cart.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.piml.cart.dto.CartProductDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,6 +29,12 @@ public class CartProduct {
     public CartProduct(Long productId, Integer quantity) {
         this.productId = productId;
         this.quantity = quantity;
+    }
+
+    public CartProductDto map() {
+        return CartProductDto.builder()
+                .productId(this.getProductId())
+                .quantity(this.getQuantity()).build();
     }
 
     public Map.Entry<Long, Integer> mapQttyByProductId () {
