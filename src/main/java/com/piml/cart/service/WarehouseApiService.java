@@ -41,7 +41,11 @@ public class WarehouseApiService {
 
     public HttpStatus stockAdjust (List<CartProductDto> productList) {
         String resourceUri = WAREHOUSE_API_URL.concat(WAREHOUSE_RESOURCE_2);
+        try{
         ResponseEntity<Object> result = restTemplate.postForEntity(resourceUri, productList, Object.class);
         return result.getStatusCode();
+        } catch (HttpClientErrorException ex){
+            throw new EntityNotFoundException("Product not found in stock!");
     }
+}
 }
