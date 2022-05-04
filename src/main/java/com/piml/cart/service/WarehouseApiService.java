@@ -7,6 +7,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
@@ -33,7 +34,7 @@ public class WarehouseApiService {
             WarehouseStockDto[] listWarehouses = result.getBody();
             return Arrays
                     .stream(listWarehouses).collect(Collectors.toList());
-        } catch (EntityNotFoundException ex){
+        } catch (HttpClientErrorException ex){
             throw new EntityNotFoundException("Product not found in stock!");
         }
     }
@@ -41,8 +42,6 @@ public class WarehouseApiService {
     public HttpStatus stockAdjust (List<CartProductDto> productList) {
         String resourceUri = WAREHOUSE_API_URL.concat(WAREHOUSE_RESOURCE_2);
         ResponseEntity<Object> result = restTemplate.postForEntity(resourceUri, productList, Object.class);
-        if (!result.getStatusCode().is2xxSuccessful())
-            throw new RuntimeException("Chamada para API não sucedeu.");
         return result.getStatusCode();
     }
 }

@@ -1,10 +1,14 @@
 package com.piml.cart.service;
 
 import com.piml.cart.dto.BuyerDto;
+import com.piml.cart.exception.BuyerAlreadyExistsException;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import javax.persistence.EntityNotFoundException;
 
 @Service
 public class BuyerApiService {
@@ -13,7 +17,6 @@ public class BuyerApiService {
 
     private final RestTemplate restTemplate;
 
-    // TODO: 03/05/22 put errorHandler 
     public BuyerApiService (RestTemplateBuilder builder) {
         this.restTemplate = builder
                 .build();
@@ -21,18 +24,21 @@ public class BuyerApiService {
 
     public BuyerDto create(BuyerDto buyerDto) {
         String resourceURI = BUYER_API_URI.concat(API_RESOURCE);
-
-        ResponseEntity<BuyerDto> result = restTemplate.postForEntity(resourceURI, buyerDto, BuyerDto.class);
-        return result.getBody();
+        try {
+            ResponseEntity<BuyerDto> result = restTemplate.postForEntity(resourceURI, buyerDto, BuyerDto.class);
+            return result.getBody();
+        } catch (HttpClientErrorException ex) {
+            throw new BuyerAlreadyExistsException("Buyer ".concat(buyerDto.getName()).concat(" already exists."));
+        }
     }
 
     public BuyerDto getById(Long id) {
         String resourceURI = BUYER_API_URI.concat(API_RESOURCE).concat("/").concat(String.valueOf(id));
-        try {
+        try{
             ResponseEntity<BuyerDto> result = restTemplate.getForEntity(resourceURI, BuyerDto.class);
             return result.getBody();
-        } catch (RuntimeException ex) {
-            throw new RuntimeException(("Something went wrong...."));
+        }catch(EntityNotFoundException ex){
+            throw new EntityNotFoundException("Buyer not found");
         }
     }
 }

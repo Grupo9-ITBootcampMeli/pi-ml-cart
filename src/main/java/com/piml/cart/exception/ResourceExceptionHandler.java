@@ -17,11 +17,16 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(ClosedCartException.class)
     protected ResponseEntity<?> handleCartException(){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Cart has already been closed");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Cart has already been closed.");
     }
 
     @ExceptionHandler(OutOfStockException.class)
     protected ResponseEntity<?> handleOutOfStockException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BuyerAlreadyExistsException.class)
+    protected ResponseEntity<?> handleBuyerExistsException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
