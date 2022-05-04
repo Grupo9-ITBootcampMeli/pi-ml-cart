@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +33,8 @@ public class WarehouseApiService {
             WarehouseStockDto[] listWarehouses = result.getBody();
             return Arrays
                     .stream(listWarehouses).collect(Collectors.toList());
-        }catch (RuntimeException ex){
-            throw new RuntimeException("Product not found!");
+        } catch (EntityNotFoundException ex){
+            throw new EntityNotFoundException("Product not found in stock!");
         }
     }
 

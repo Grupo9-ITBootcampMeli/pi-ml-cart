@@ -11,7 +11,18 @@ import javax.persistence.EntityNotFoundException;
 @ControllerAdvice(annotations = RestController.class)
 public class ResourceExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
-    protected ResponseEntity<?> handleException() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource not found");
+    protected ResponseEntity<?> handleException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(ClosedCartException.class)
+    protected ResponseEntity<?> handleCartException(){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Cart has already been closed");
+    }
+
+    @ExceptionHandler(OutOfStockException.class)
+    protected ResponseEntity<?> handleOutOfStockException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
 }

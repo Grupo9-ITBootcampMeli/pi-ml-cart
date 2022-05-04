@@ -31,7 +31,7 @@ public class CartController {
     }
 
     @GetMapping("/api/v1/fresh-products/orders/")
-    public ResponseEntity<List<CartProductDto>> getCartProducts(@RequestParam(name = "querytype") Long id) {
+    public ResponseEntity<List<CartProductDto>> getCartProducts(@RequestParam(name = "products") Long id) {
         List<CartProduct> cartProductList = cartService.getCartProducts(id);
         return new ResponseEntity<>(cartProductList
                 .stream()
@@ -43,8 +43,6 @@ public class CartController {
         Cart cartToUpdate = cartService.getCartById(id);
         Cart updatedCart = cartService.updateCartStatus(cartToUpdate);
         String responseString = "Order status successfully updated to: ";
-        // TODO: 03/05/22 fix response
-        // TODO: 03/05/22 add exception handler
         return new ResponseEntity(responseString.concat(updatedCart.getOrderStatus()), HttpStatus.OK);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,14 +26,11 @@ public class PriceApiService {
 
     public List<PriceDto> fetchPricesById(List<Long> ids) {
         String resourceURI = Utils.makeURIWithIds(PRODUCT_API_URI, PRODUCTS_RESOURCE, ids);
-        
         try{
             ResponseEntity<PriceDto[]> result = restTemplate.getForEntity(resourceURI, PriceDto[].class);
             return Arrays.stream(result.getBody()).collect(Collectors.toList());
-        } catch (RuntimeException ex) {
-            throw new RuntimeException("Product not Found!");
-            // TODO: 03/05/22 implement exception handling 
+        } catch (EntityNotFoundException ex) {
+            throw new EntityNotFoundException("Product not Found!");
         }
     }
-
 }
