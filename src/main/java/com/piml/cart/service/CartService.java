@@ -5,6 +5,8 @@ import com.piml.cart.dto.PriceDto;
 import com.piml.cart.dto.WarehouseStockDto;
 import com.piml.cart.entity.Cart;
 import com.piml.cart.entity.CartProduct;
+import com.piml.cart.exception.ClosedCartException;
+import com.piml.cart.exception.OutOfStockException;
 import com.piml.cart.repository.CartProductRepository;
 import com.piml.cart.repository.CartRepository;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class CartService {
 
     public Cart create(Cart cart) {
         validateCartProducts(cart);
+        cart.setOrderStatus("Fechado");
         Cart registeredCart = cartRepository.save(validateCartProducts(cart));
         List<CartProduct> cartProducts = setCart(registeredCart);
         cartProducts.forEach(cartProductRepository::save);
@@ -41,11 +44,11 @@ public class CartService {
         return cartRepository.getById(id).getProducts();
     }
 
-    public Cart updateCartStatus(Cart cart) {
+    public Cart updateCartStatus(Cart cart) throws RuntimeException {
         if (cart.getOrderStatus().equals("Aberto")) {
             cart.setOrderStatus("Fechado");
         } else {
-            throw new RuntimeException("Order has already been closed");
+            throw new ClosedCartException("Order has already been closed");
         }
         return cartRepository.save(cart);
     }
@@ -67,10 +70,11 @@ public class CartService {
         return cart;
     }
 
-    private void mapComparer (Map<Long, Integer> stock, Map<Long, Integer> cart) {
+    private void mapComparer (Map<Long, Integer> stock, Map<Long, Integer> cart) throws RuntimeException{
        stock.forEach((key, value) -> {
            if(cart.get(key) > value) {
-               throw new RuntimeException("Product out of stock");
+               throw new OutOfStockException(("The Product with ProductId ").concat(String.valueOf(key))
+                       .concat(" is out of stock."));
            }
        });
     }
