@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class PriceApiService {
     private static final String PRODUCT_API_URI = "http://products:8081";
-    private static final String PRODUCTS_RESOURCE = "/api/v1/fresh-products/?products=";
+    private static final String PRODUCTS_RESOURCE = "/fresh-products/v1?products=";
     private final RestTemplate restTemplate;
 
 
@@ -25,6 +25,7 @@ public class PriceApiService {
 
     public List<PriceDto> fetchPricesById(List<Long> ids) {
         String resourceURI = Utils.makeURIWithIds(PRODUCT_API_URI, PRODUCTS_RESOURCE, ids);
+        
         try{
             ResponseEntity<PriceDto[]> result = restTemplate.getForEntity(resourceURI, PriceDto[].class);
             return Arrays.stream(result.getBody()).collect(Collectors.toList());
