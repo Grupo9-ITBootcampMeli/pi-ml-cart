@@ -32,12 +32,12 @@ public class CartService {
     }
 
     public Cart create(Cart cart) {
-        validateCartProducts(cart);
-        cart.setOrderStatus("Fechado");
-        Cart registeredCart = cartRepository.save(validateCartProducts(cart));
+        Cart validCart = validateCartProducts(cart);
+        validCart.setOrderStatus("Fechado");
+        Cart registeredCart = cartRepository.save(validCart);
         List<CartProduct> cartProducts = setCart(registeredCart);
         cartProducts.forEach(cartProductRepository::save);
-        return cart;
+        return registeredCart;
     }
 
     public List<CartProduct> getCartProducts(Long id) {
@@ -113,6 +113,9 @@ public class CartService {
 
     private static List<Long> getProductIds (List<CartProduct> cartProducts) {
         return cartProducts.stream().map(CartProduct::getProductId).collect(Collectors.toList());
+    }
+    public List<Cart> getAllCarts(){
+        return cartRepository.findAll();
     }
 }
 
