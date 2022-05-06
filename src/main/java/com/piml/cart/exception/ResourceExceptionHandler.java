@@ -29,5 +29,8 @@ public class ResourceExceptionHandler {
     protected ResponseEntity<?> handleBuyerExistsException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
-
+    @ExceptionHandler(EmptyCartException.class)
+    protected ResponseEntity<?> emptyCartException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

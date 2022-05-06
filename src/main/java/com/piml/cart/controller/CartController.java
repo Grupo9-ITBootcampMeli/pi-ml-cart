@@ -1,9 +1,7 @@
 package com.piml.cart.controller;
 
 
-import com.piml.cart.dto.CartDto;
-import com.piml.cart.dto.CartProductDto;
-import com.piml.cart.dto.ResponseDto;
+import com.piml.cart.dto.*;
 import com.piml.cart.entity.Cart;
 import com.piml.cart.entity.CartProduct;
 import com.piml.cart.service.CartService;
@@ -12,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,5 +43,10 @@ public class CartController {
         Cart updatedCart = cartService.updateCartStatus(cartToUpdate);
         String responseString = "Order status successfully updated to: ";
         return new ResponseEntity(responseString.concat(updatedCart.getOrderStatus()), HttpStatus.OK);
+    }
+    @GetMapping("/api/v1/totalSell")
+    public ResponseEntity<?> getAllCart(){
+        List<TopSellProductsDTO> cartList = cartService.calculateTotalCart();
+    return new ResponseEntity(cartList, HttpStatus.OK);
     }
 }

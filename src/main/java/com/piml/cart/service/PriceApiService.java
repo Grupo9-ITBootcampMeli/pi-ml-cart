@@ -1,7 +1,9 @@
 package com.piml.cart.service;
 
 
+import com.piml.cart.dto.NameAndIdDTO;
 import com.piml.cart.dto.PriceDto;
+import com.piml.cart.entity.CartProduct;
 import com.piml.cart.util.Utils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,15 @@ public class PriceApiService {
         String resourceURI = Utils.makeURIWithIds(PRODUCT_API_URI, PRODUCTS_RESOURCE, ids);
         try{
             ResponseEntity<PriceDto[]> result = restTemplate.getForEntity(resourceURI, PriceDto[].class);
+            return Arrays.stream(result.getBody()).collect(Collectors.toList());
+        } catch (EntityNotFoundException ex) {
+            throw new EntityNotFoundException("Product not Found!");
+        }
+    }
+    public List<NameAndIdDTO> fetchProductsByNameAndId(List<Long> ids) {
+        String resourceURI = Utils.makeURIWithIds(PRODUCT_API_URI, PRODUCTS_RESOURCE, ids);
+        try{
+            ResponseEntity<NameAndIdDTO[]> result = restTemplate.getForEntity(resourceURI, NameAndIdDTO[].class);
             return Arrays.stream(result.getBody()).collect(Collectors.toList());
         } catch (EntityNotFoundException ex) {
             throw new EntityNotFoundException("Product not Found!");

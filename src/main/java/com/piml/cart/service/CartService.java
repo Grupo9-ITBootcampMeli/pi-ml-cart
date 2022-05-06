@@ -1,17 +1,18 @@
 package com.piml.cart.service;
 
 
-import com.piml.cart.dto.PriceDto;
-import com.piml.cart.dto.WarehouseStockDto;
+import com.piml.cart.dto.*;
 import com.piml.cart.entity.Cart;
 import com.piml.cart.entity.CartProduct;
 import com.piml.cart.exception.ClosedCartException;
+import com.piml.cart.exception.EmptyCartException;
 import com.piml.cart.exception.OutOfStockException;
 import com.piml.cart.repository.CartProductRepository;
 import com.piml.cart.repository.CartRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,7 @@ public class CartService {
         return validateQttyInStock(qttyInWarehouse, cart);
     }
 
-    private Cart validateQttyInStock (Map<Long, Integer> qttyInStock, Cart cart) {
+    private Cart validateQttyInStock(Map<Long, Integer> qttyInStock, Cart cart) {
         List<CartProduct> cartProducts = cart.getProducts();
         Map<Long, Integer> cartMap = cartProducts.stream()
                 .map(CartProduct::mapQttyByProductId)
@@ -70,27 +71,27 @@ public class CartService {
         return cart;
     }
 
-    private void mapComparer (Map<Long, Integer> stock, Map<Long, Integer> cart) throws RuntimeException{
-       stock.forEach((key, value) -> {
-           if(cart.get(key) > value) {
-               throw new OutOfStockException(("The Product with ProductId ").concat(String.valueOf(key))
-                       .concat(" is out of stock."));
-           }
-       });
+    private void mapComparer(Map<Long, Integer> stock, Map<Long, Integer> cart) throws RuntimeException {
+        stock.forEach((key, value) -> {
+            if (cart.get(key) > value) {
+                throw new OutOfStockException(("The Product with ProductId ").concat(String.valueOf(key))
+                        .concat(" is out of stock."));
+            }
+        });
     }
 
     public List<CartProduct> setCart(Cart cart) {
         List<CartProduct> cartProducts = new ArrayList<>();
-        for (CartProduct cp: cart.getProducts()) {
+        for (CartProduct cp : cart.getProducts()) {
             cp.setCart(cart);
             cartProducts.add(cp);
         }
-        return  cartProducts;
+        return cartProducts;
     }
 
     public Cart getCartById(Long id) {
         return cartRepository.findById(id).orElseThrow(() -> {
-           throw new EntityNotFoundException("Cart not found");
+            throw new EntityNotFoundException("Cart not found");
         });
     }
 
@@ -101,7 +102,7 @@ public class CartService {
         return cartProducts;
     }
 
-    private Map<Long, Integer> getProductQttyStock (List<CartProduct> cartProducts) {
+    private Map<Long, Integer> getProductQttyStock(List<CartProduct> cartProducts) {
         List<Long> ids = CartService.getProductIds(cartProducts);
         List<WarehouseStockDto> warehouses = this.warehouseApiService.fetchWarehousesById(ids);
         return warehouses.stream()
@@ -110,12 +111,46 @@ public class CartService {
     }
 
 
-
-    private static List<Long> getProductIds (List<CartProduct> cartProducts) {
+    private static List<Long> getProductIds(List<CartProduct> cartProducts) {
         return cartProducts.stream().map(CartProduct::getProductId).collect(Collectors.toList());
     }
-    public List<Cart> getAllCarts(){
-        return cartRepository.findAll();
+
+    public List<TopSellProductsDTO> calculateTotalCart() {
+        List<Cart> listCarts = getAllCarts();
+        Map<Long, QtyPriceDTO> totalProducts = new HashMap<Long, QtyPriceDTO>();
+        if (listCarts.size() != 0) {
+            for (Cart cart : listCarts) {
+                for (CartProduct product : cart.getProducts()) {
+                    Integer accumulator = 0;
+                    if (totalProducts.get(product.getProductId()) == null) {
+                        accumulator = product.getQuantity();
+                    } else {
+                        accumulator = totalProducts.get(product.getProductId()).getQuantity() + product.getQuantity();
+                    }
+                    totalProducts.put(product.getProductId(), new QtyPriceDTO(product.getUnitPrice(), accumulator, product.getUnitPrice().multiply(BigDecimal.valueOf(accumulator))));
+                }
+            }
+        }
+        Set<Long> keySet = totalProducts.keySet();
+        ArrayList<Long> listOfKeys = new ArrayList<Long>(keySet);
+        List<NameAndIdDTO> nameAndIdList = priceApiService.fetchProductsByNameAndId(listOfKeys);
+        return topSellProducts(nameAndIdList,totalProducts);
+    }
+
+    public List<Cart> getAllCarts() throws  EmptyCartException {
+        List<Cart> cartsList = cartRepository.findAll();
+        if(cartsList.size() == 0){
+            throw new EmptyCartException("There no sells");
+        }
+        return cartsList;
+    }
+
+    public List<TopSellProductsDTO> topSellProducts(List<NameAndIdDTO> listOfNames, Map<Long, QtyPriceDTO> soldProducts) {
+        List<TopSellProductsDTO> finalProducts = new ArrayList<TopSellProductsDTO>();
+        for (NameAndIdDTO x : listOfNames) {
+            finalProducts.add(new TopSellProductsDTO(x.getId(),x.getName(), soldProducts.get(x.getId()).getQuantity(), soldProducts.get(x.getId()).getPrice(), soldProducts.get(x.getId()).getTotal()));
+        }
+        return finalProducts;
     }
 }
 
