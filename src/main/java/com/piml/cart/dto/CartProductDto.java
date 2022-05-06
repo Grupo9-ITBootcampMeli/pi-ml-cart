@@ -1,10 +1,11 @@
 package com.piml.cart.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.piml.cart.entity.CartProduct;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Map;
 
 @Builder
 @Getter
@@ -12,8 +13,11 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartProductDto {
+    @NotNull(message = "Please fill in a valid productId")
     private Long productId;
+    @NotNull(message = "Please fill in a valid quantity")
     private Integer quantity;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private BigDecimal unitPrice;
 
     public static CartProduct map(CartProductDto dto) {
@@ -22,10 +26,6 @@ public class CartProductDto {
                 .quantity(dto.getQuantity()).build();
     }
 
-    public CartProductDto (Long productId, Integer quantity) {
-        this.productId = productId;
-        this.quantity = quantity;
-    }
 
     public static CartProductDto map(CartProduct cp) {
         return CartProductDto.builder()
