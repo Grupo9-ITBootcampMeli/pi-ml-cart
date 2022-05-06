@@ -32,12 +32,12 @@ public class CartService {
     }
 
     public Cart create(Cart cart) {
-        validateCartProducts(cart);
-        cart.setOrderStatus("Fechado");
-        Cart registeredCart = cartRepository.save(validateCartProducts(cart));
+        Cart validCart = validateCartProducts(cart);
+        validCart.setOrderStatus("Fechado");
+        Cart registeredCart = cartRepository.save(validCart);
         List<CartProduct> cartProducts = setCart(registeredCart);
         cartProducts.forEach(cartProductRepository::save);
-        return cart;
+        return registeredCart;
     }
 
     public List<CartProduct> getCartProducts(Long id) {
