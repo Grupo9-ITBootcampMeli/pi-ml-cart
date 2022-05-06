@@ -195,6 +195,9 @@ public class CartService {
     private static List<Long> getProductIds (List<CartProduct> cartProducts) {
         return cartProducts.stream().map(CartProduct::getProductId).collect(Collectors.toList());
     }
+    public List<Cart> getAllCarts(){
+        return cartRepository.findAll();
+    }
 }
 
 
