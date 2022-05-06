@@ -3,6 +3,7 @@ package com.piml.cart.dto;
 import com.piml.cart.entity.Cart;
 import lombok.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ public class CartDto {
     private LocalDateTime date;
     private Long buyerId;
     private String orderStatus;
+    @NotEmpty(message = "Please list at least one product you wish to buy." )
     private List<CartProductDto> products;
 
 
